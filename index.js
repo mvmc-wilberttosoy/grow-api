@@ -3,6 +3,9 @@ const express = require('express');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const connectToDatabase = require('./configurations/database');
+
+connectToDatabase();
 
 app.use(express.json());
 
