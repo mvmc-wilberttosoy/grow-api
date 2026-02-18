@@ -87,11 +87,7 @@ const updateDivisionById = async (req, res) => {
 
         const { name, description } = req.body;
 
-        if (!name) {
-            return res.status(400).json({ message: 'Division name is required' });
-        }
-
-        const updatedDivision = await Division.findByIdAndUpdate(
+        const updatedDivision = await Division.findByOneAndUpdate(
             divisionId,
             {
                 name,
@@ -122,7 +118,7 @@ const deleteDivisionById = async (req, res) => {
             return res.status(400).json({ message: 'Invalid division ID format' });
         }
 
-        const deletedDivision = await Division.findByIdAndDelete(divisionId);
+        const deletedDivision = await Division.findOneAndDelete(divisionId);
 
         if (!deletedDivision) {
             return res.status(404).json({ message: 'Division not found' });

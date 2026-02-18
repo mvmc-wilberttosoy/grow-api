@@ -10,7 +10,8 @@ connectToDatabase();
 app.use(express.json());
 
 
-app.use('/v1/api/division', require('./source/routes/division.routes'));
+app.use('/api/v1/divisions', require('./source/routes/division.routes'));
+app.use('/api/v1/departments', require('./source/routes/department.routes'));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
