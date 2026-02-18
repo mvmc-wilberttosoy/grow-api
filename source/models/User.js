@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
         },
         email: {
             type: String,
+            unique: true,
             required: true,
             lowercase: true,
             trim: true
@@ -33,7 +34,8 @@ const userSchema = new mongoose.Schema(
         },
         isDefaultPassword: {
             type: Boolean,
-            required: true
+            required: true,
+            default: true
         },
         contactNumber: {
             type: String,
