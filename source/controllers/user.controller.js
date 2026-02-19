@@ -69,6 +69,23 @@ const createNewUser = async (req, res) => {
             return res.status(400).json({ message: 'User creation failed' });
         }
 
+        if (newUser.role === 'User') {
+            
+            // Create a new uniform 
+            const updatedUniform = await Uniform.create(
+                {
+                    employeeId: newUser._id,
+                    topSize: null,
+                    bottomSize: null,
+                }
+            );
+            if (!updatedUniform) {
+                return res.status(400).json({ message: 'Uniform creation failed' });
+            }
+
+            
+        }
+
         return res.status(201).json({ message: 'New user created successfully' });
     } catch (error) {
         console.log(error);
@@ -269,7 +286,7 @@ const deleteEmployeeById = async (req, res) => {
             return res.status(404).json({ message: 'Employee not found' });
         }
 
-        return res.status(200).json({ message: 'Employee deleted successfully '});
+        return res.status(200).json({ message: 'Employee deleted successfully ' });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Something went wrong' });
