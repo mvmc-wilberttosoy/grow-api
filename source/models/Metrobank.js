@@ -18,6 +18,10 @@ const metrobankSchema = new mongoose.Schema(
         signatureSpecime: {
             url: { type: String },
             publicId: { type: String }
+        },
+        status: {
+            type: Boolean,
+            default: false
         }
     },
     {

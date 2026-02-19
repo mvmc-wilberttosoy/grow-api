@@ -21,9 +21,9 @@ const createNewUser = async (req, res) => {
             role
         } = req.body;
 
-        if (!firstName || !lastName || !birthday || !address || !email || !contactNumber || !divisionId || !departmentId || !position || !startDate ) {
+        if (!firstName || !lastName || !birthday || !address || !email || !contactNumber || !divisionId || !departmentId || !position || !startDate) {
             return res.status(400).json({ message: 'Please provide all required fields' });
-        } 
+        }
 
         const user = await User.findOne({ email });
         if (user) {
@@ -55,7 +55,7 @@ const createNewUser = async (req, res) => {
                 address,
                 email,
                 password: hashedPassword,
-                contactNumber, 
+                contactNumber,
                 divisionId,
                 departmentId,
                 position,
@@ -75,6 +75,21 @@ const createNewUser = async (req, res) => {
     }
 }
 
+const getEmployees = async (req, res) => {
+    try {
+        const employees = await User.find({}).select('-password');
+        if (employees.length == 0) {
+            return res.status(404).json({ message: 'No current employeess' });
+        }
+
+        return res.status(200).json(employees);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Something went wrong' });
+    }
+}
+
 module.exports = {
-    createNewUser
+    createNewUser,
+    getEmployees
 }

@@ -16,6 +16,10 @@ const uniformSchema = new mongoose.Schema(
         },
         bottomSize: {
             type: String
+        },
+        status: {
+            type: Boolean,
+            default: false
         }
     },
     {

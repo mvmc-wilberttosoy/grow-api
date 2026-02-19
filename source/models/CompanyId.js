@@ -23,6 +23,10 @@ const companyIdSchema = new mongoose.Schema(
         },
         emergencyContactNumber: {
             type: String,
+        },
+        status: {
+            type: Boolean,
+            default: false
         }
     },
     {
