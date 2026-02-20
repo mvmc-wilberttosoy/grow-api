@@ -1,95 +1,68 @@
 const User = require('../models/User');
 const Division = require('../models/Division');
 const Department = require('../models/Department');
+const CompanyId = require('../models/CompanyId');
+const Uniform = require('../models/Uniform');
+const Metrobank = require('../models/Metrobank');
+const Touchpoint = require('../models/Touchpoints');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+// Services
+const userServices = require('../services/user.services');
 
-const createNewUser = async (req, res) => {
+// Utilities
+const generalUtilities = require('../utilities/general.utilities');
+const mongooseUtilities = require('../utilities/mongoose.utilities');
+
+// Asynchronous function to handle user creation.
+const createNewUser = async (req, res, next) => {
+    // Start a transaction to ensure atomicity.
+    const session = await mongooseUtilities.startTransaction();
+
     try {
-        const {
-            firstName,
-            middleName,
-            lastName,
-            birthday,
-            address,
-            email,
-            contactNumber,
-            divisionId,
-            departmentId,
-            position,
-            startDate,
-            role
-        } = req.body;
+        const { divisionId, departmentId, email } = req.body;
 
-        if (!firstName || !lastName || !birthday || !address || !email || !contactNumber || !divisionId || !departmentId || !position || !startDate) {
-            return res.status(400).json({ message: 'Please provide all required fields' });
-        }
+        // Validate all required fields.
+        const requiredFields = [
+            'firstName',
+            'lastName',
+            'birthday',
+            'address',
+            'email',
+            'contactNumber',
+            'divisionId',
+            'departmentId',
+            'position',
+            'startDate'
+        ];
+        generalUtilities.validateRequiredFields(req.body, requiredFields);
 
-        const user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
+        // Validate divisionId and departmentId as valid ObjectIds.
+        mongooseUtilities.validateObjectId(divisionId);
+        mongooseUtilities.validateObjectId(departmentId);
 
-        if (!mongoose.Types.ObjectId.isValid(divisionId) || !mongoose.Types.ObjectId.isValid(departmentId)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
-        }
+        // Ensure user does not already exist by email.
+        await mongooseUtilities.validateUserExistanceByEmail(email);
 
-        const division = await Division.findById(divisionId);
-        if (!division) {
-            return res.status(404).json({ message: 'Division not found' });
-        }
+        // Validate divsion and department existence.
+        await mongooseUtilities.validateDivisionExistenceById(divisionId);
+        await mongooseUtilities.validateDepartmentExistenceById(departmentId);
 
-        const department = await Department.findById(departmentId);
-        if (!department) {
-            return res.status(404).json({ message: 'Department not found' });
-        }
+        // Create the new user.
+        await userServices.createNewUser(req.body, session);
 
-        const hashedPassword = await bcrypt.hash('qwerty', 10);
+        // Commit transaction if successful.
+        await mongooseUtilities.commitTransaction(session);
 
-        const newUser = await User.create(
-            {
-                firstName,
-                middleName,
-                lastName,
-                birthday,
-                address,
-                email,
-                password: hashedPassword,
-                contactNumber,
-                divisionId,
-                departmentId,
-                position,
-                startDate,
-                role
-            }
-        )
-
-        if (!newUser) {
-            return res.status(400).json({ message: 'User creation failed' });
-        }
-
-        if (newUser.role === 'User') {
-            
-            // Create a new uniform 
-            const updatedUniform = await Uniform.create(
-                {
-                    employeeId: newUser._id,
-                    topSize: null,
-                    bottomSize: null,
-                }
-            );
-            if (!updatedUniform) {
-                return res.status(400).json({ message: 'Uniform creation failed' });
-            }
-
-            
-        }
-
+        // Respond with sucess message.
         return res.status(201).json({ message: 'New user created successfully' });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Something went wrong' });
+        // Rollback transaction on error and pass to next middleware.
+        await mongooseUtilities.abortTransaction(session);
+        next(error);
+    } finally {
+        session.endSession();
     }
 }
 
@@ -273,23 +246,24 @@ const updateEmployeeById = async (req, res) => {
 }
 
 
-const deleteEmployeeById = async (req, res) => {
+const deleteEmployeeById = async (req, res, next) => {
+
+    const session = await mongooseUtilities.startTransaction();
+
     try {
         const { employeeId } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
-        }
+        mongooseUtilities.validateObjectId(employeeId);
+        await mongooseUtilities.validateUserExistanceById(employeeId);
 
-        const deletedEmployee = await User.findByIdAndDelete(employeeId);
-        if (!deletedEmployee) {
-            return res.status(404).json({ message: 'Employee not found' });
-        }
+        await userServices.deleteUserById(employeeId, session);
 
-        return res.status(200).json({ message: 'Employee deleted successfully ' });
+        await mongooseUtilities.commitTransaction(session);
+
+        return res.status(200).json({ message: 'Employee and related data deleted successfully' });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Something went wrong' });
+        await mongooseUtilities.abortTransaction(session);
+        next(error);
     }
 }
 

@@ -15,7 +15,7 @@ const metrobankSchema = new mongoose.Schema(
             url: { type: String },
             publicId: { type: String }
         },
-        signatureSpecime: {
+        signatureSpecimen: {
             url: { type: String },
             publicId: { type: String }
         },
