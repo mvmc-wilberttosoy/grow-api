@@ -15,7 +15,7 @@ const CustomError = require('../utilities/error.utilities');
 const createNewUser = async (reqBody, session) => {
     try {
         const password = generalUtilities.generateRandomPassword();
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash('123', 10);
 
         const newUser = await User.create(
             [

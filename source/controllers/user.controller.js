@@ -245,23 +245,31 @@ const updateEmployeeById = async (req, res) => {
     }
 }
 
-
+// Asynchronous function to handle user deletion.
 const deleteEmployeeById = async (req, res, next) => {
-
+    // Start a transaction to ensure atomicity.
     const session = await mongooseUtilities.startTransaction();
 
     try {
+        // Extract employeeId from route params.
         const { employeeId } = req.params;
 
+        // Validate that the employeeId is a valid ObjectId.
         mongooseUtilities.validateObjectId(employeeId);
+
+        // Ensure the user exists before deleting.
         await mongooseUtilities.validateUserExistanceById(employeeId);
 
+        // Delete the user and related data within the transactions.
         await userServices.deleteUserById(employeeId, session);
 
+        // Commit transaction if successful.
         await mongooseUtilities.commitTransaction(session);
 
+        // Respond with sucess message.
         return res.status(200).json({ message: 'Employee and related data deleted successfully' });
     } catch (error) {
+        // Rollback transaction on error and pass to next middleware.
         await mongooseUtilities.abortTransaction(session);
         next(error);
     }

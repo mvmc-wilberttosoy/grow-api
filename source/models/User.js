@@ -64,6 +64,12 @@ const userSchema = new mongoose.Schema(
             required: true,
             default: 'Active'
         },
+        level: {
+            type: String,
+            required: true,
+            enum: ['Staff', 'Supervisor', 'Manager'],
+            default: 'Staff'
+        },
         role: {
             type: String,
             required: true,
