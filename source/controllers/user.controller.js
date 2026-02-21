@@ -21,34 +21,6 @@ const createNewUser = async (req, res, next) => {
     const session = await mongooseUtilities.startTransaction();
 
     try {
-        const { divisionId, departmentId, email } = req.body;
-
-        // Validate all required fields.
-        const requiredFields = [
-            'firstName',
-            'lastName',
-            'birthday',
-            'address',
-            'email',
-            'contactNumber',
-            'divisionId',
-            'departmentId',
-            'position',
-            'startDate'
-        ];
-        generalUtilities.validateRequiredFields(req.body, requiredFields);
-
-        // Validate divisionId and departmentId as valid ObjectIds.
-        mongooseUtilities.validateObjectId(divisionId);
-        mongooseUtilities.validateObjectId(departmentId);
-
-        // Ensure user does not already exist by email.
-        await mongooseUtilities.validateUserExistanceByEmail(email);
-
-        // Validate divsion and department existence.
-        await mongooseUtilities.validateDivisionExistenceById(divisionId);
-        await mongooseUtilities.validateDepartmentExistenceById(departmentId);
-
         // Create the new user.
         await userServices.createNewUser(req.body, session);
 

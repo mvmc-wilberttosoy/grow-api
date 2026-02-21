@@ -9,11 +9,40 @@ const touchpointServices = require('../services/touchpoint.services');
 
 // Utilities
 const generalUtilities = require('../utilities/general.utilities');
+const mongooseUtilities = require('../utilities/mongoose.utilities');
 const CustomError = require('../utilities/error.utilities');
 
 // Create new user service
-const createNewUser = async (reqBody, session) => {
+const createNewUser = async (reqBody, session, next) => {
     try {
+        const { divisionId, departmentId, email } = reqBody;
+
+        // Validate all required fields.
+        const requiredFields = [
+            'firstName',
+            'lastName',
+            'birthday',
+            'address',
+            'email',
+            'contactNumber',
+            'divisionId',
+            'departmentId',
+            'position',
+            'startDate'
+        ];
+        generalUtilities.validateRequiredFields(reqBody, requiredFields);
+
+        // Validate divisionId and departmentId as valid ObjectIds.
+        mongooseUtilities.validateObjectId(divisionId);
+        mongooseUtilities.validateObjectId(departmentId);
+
+        // Ensure user does not already exist by email.
+        await mongooseUtilities.validateUserExistanceByEmail(email);
+
+        // Validate divsion and department existence.
+        await mongooseUtilities.validateDivisionExistenceById(divisionId);
+        await mongooseUtilities.validateDepartmentExistenceById(departmentId);
+
         const password = generalUtilities.generateRandomPassword();
         const hashedPassword = await bcrypt.hash('123', 10);
 
@@ -38,7 +67,7 @@ const createNewUser = async (reqBody, session) => {
             await touchpointServices.createTouchpoints(newUser[0]._id, reqBody.touchpoints, session);
         }
     } catch (error) {
-        throw new CustomError('User creation failed', 400);
+        throw error;
     }
 };
 
