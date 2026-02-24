@@ -19,14 +19,14 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const accessToken = jwtUtilities.generateAccessToken(user._id, user.role);
-        const refreshToken = jwtUtilities.generateRefreshToken(user._id);
+        const accessToken = jwtUtilities.generateAccessToken(user);
+        const refreshToken = jwtUtilities.generateRefreshToken(user);
 
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
 
-        return res.status(200).json({
-            accessToken,
-            message: 'Logged in successfully'
+        return res.status(200).json({ 
+            message: 'Logged in successfully',
+            accessToken
         });
     } catch (error) {
         throw new CustomError('Login failed', 400);
@@ -35,20 +35,19 @@ const login = async (req, res) => {
 
 const refreshAccessToken = async (req, res) => {
     try {
-        const refreshToken = req.cookies.refreshToken;
+        const cookies = req.cookies.jwt;
 
         // console.log(req.cookies.refreshToken);
-        if (!refreshToken) {
+        if (!cookies) {
             return res.status(401).json({ message: 'No refresh token provided' });
         }
 
-        const decoded = jwtUtilities.verifyRefreshToken(refreshToken);
-        console.log(decoded)
+        const decoded = jwtUtilities.verifyRefreshToken(cookies);
         if (!decoded) {
             return res.status(401).json({ message: 'Invalid or expired refresh token' });
         }
 
-        const accessToken = jwtUtilities.generateAccessToken(decoded.userId);
+        const accessToken = jwtUtilities.generateAccessToken(decoded.id);
         return res.status(200).json({ accessToken });
     } catch (error) {
         throw new CustomError('Error refreshing token', 400);

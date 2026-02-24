@@ -39,17 +39,13 @@ const createNewUser = async (req, res, next) => {
 }
 
 
-const getEmployees = async (req, res) => {
+const getEmployees = async (req, res, next) => {
     try {
-        const employees = await User.find({ role: 'User' }).select('-password');
-        if (employees.length == 0) {
-            return res.status(404).json({ message: 'No current employeess' });
-        }
+        const employees = await userServices.getEmployees();
 
         return res.status(200).json(employees);
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Something went wrong' });
+        next(error);
     }
 }
 
@@ -225,12 +221,6 @@ const deleteEmployeeById = async (req, res, next) => {
     try {
         // Extract employeeId from route params.
         const { employeeId } = req.params;
-
-        // Validate that the employeeId is a valid ObjectId.
-        mongooseUtilities.validateObjectId(employeeId);
-
-        // Ensure the user exists before deleting.
-        await mongooseUtilities.validateUserExistanceById(employeeId);
 
         // Delete the user and related data within the transactions.
         await userServices.deleteUserById(employeeId, session);

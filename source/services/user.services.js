@@ -72,8 +72,28 @@ const createNewUser = async (reqBody, session, next) => {
 };
 
 
+const getEmployees = async () => {
+    try {
+        const employees = await User.find({ role: 'User' });
+        if (employees.length === 0) {
+            throw new CustomError('No current employees', 404);
+        }
+
+        return employees;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 const deleteUserById = async (employeeId, session) => {
     try {
+        // Validate that the employeeId is a valid ObjectId.
+        mongooseUtilities.validateObjectId(employeeId);
+
+        // Ensure the user exists before deleting.
+        await mongooseUtilities.validateUserExistanceById(employeeId);
+
         const deletedEmployee = await User.findByIdAndDelete(employeeId, { session });
         if (!deletedEmployee) {
             throw new CustomError('Employee not found', 404);
@@ -84,11 +104,12 @@ const deleteUserById = async (employeeId, session) => {
         await metrobankServices.deleteMetrobank(employeeId, session);
         await touchpointServices.deleteTouchpoints(employeeId, session)
     } catch (error) {
-        throw new CustomError('User deletion failed', 400);
+        throw error;
     }
 }
 
 module.exports = {
     createNewUser,
+    getEmployees,
     deleteUserById
 };

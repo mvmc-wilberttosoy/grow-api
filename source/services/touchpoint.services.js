@@ -9,8 +9,6 @@ const createTouchpoints = async (employeeId, touchpoints, session) => {
             date: touchpoint.date
         }));
 
-        console.log(touchpointData);
-
         await Touchpoint.insertMany(touchpointData, { session });
     } catch (error) {
         throw new CustomError('Touchpoint creation failed', 400);
@@ -19,7 +17,6 @@ const createTouchpoints = async (employeeId, touchpoints, session) => {
 
 const deleteTouchpoints = async (employeeId, session) => {
     try {
-        console.log(employeeId);
         await Touchpoint.deleteMany({ employeeId: employeeId }, { session });
     } catch (error) {
         throw new CustomError('Touchpoint deletion failed', 400);

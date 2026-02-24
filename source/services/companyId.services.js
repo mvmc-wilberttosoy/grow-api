@@ -23,7 +23,6 @@ const createCompanyId = async (employeeId, session) => {
 
 const deleteCompanyId = async (employeeId, session) => {
     try {
-        
         const deletedCompanyId = await CompanyId.deleteOne({ employeeId: employeeId }, { session });
         if (!deletedCompanyId) {
             throw new CustomError('Company ID not found', 404);

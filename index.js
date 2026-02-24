@@ -6,11 +6,12 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const connectToDatabase = require('./source/configurations/database');
+const corsOptions = require('./source/configurations/cors');
 const globalErrorHandler = require('./source/middlewares/error.middlewares');
 
 connectToDatabase();
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
