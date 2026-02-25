@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        isOldEmployee: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
         divisionId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Division',
@@ -67,7 +72,7 @@ const userSchema = new mongoose.Schema(
         level: {
             type: String,
             required: true,
-            enum: ['Staff', 'Supervisor', 'Manager'],
+            enum: ['Staff', 'Supervisor', 'Manager', 'Admin'],
             default: 'Staff'
         },
         role: {

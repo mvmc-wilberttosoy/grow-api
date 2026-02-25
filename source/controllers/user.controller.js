@@ -9,9 +9,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 // Services
-const userServices = require('../services/user.services');
+const userServices = require('../services/user.service');
 
-// Utilities
+// Utilitie
 const generalUtilities = require('../utilities/general.utilities');
 const mongooseUtilities = require('../utilities/mongoose.utilities');
 

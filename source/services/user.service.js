@@ -2,10 +2,10 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
 // Services
-const companyIdServices = require('../services/companyId.services');
-const uniformServices = require('../services/uniform.services');
-const metrobankServices = require('../services/metrobank.services');
-const touchpointServices = require('../services/touchpoint.services');
+const companyIdServices = require('./companyId.service');
+const uniformServices = require('./uniform.service');
+const metrobankServices = require('./metrobank.service');
+const touchpointServices = require('./touchpoint.service');
 
 // Utilities
 const generalUtilities = require('../utilities/general.utilities');
@@ -60,7 +60,7 @@ const createNewUser = async (reqBody, session, next) => {
             throw new CustomError('User creation failed', 400);
         }
 
-        if (newUser[0].role == 'User') {
+        if (newUser[0].role == 'User' && newUser[0].isOldEmployee === false) {
             await companyIdServices.createCompanyId(newUser[0]._id, session);
             await uniformServices.createUniform(newUser[0]._id, session);
             await metrobankServices.createMetrobank(newUser[0]._id, session);
