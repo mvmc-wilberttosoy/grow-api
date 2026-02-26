@@ -108,8 +108,33 @@ const deleteUserById = async (employeeId, session) => {
     }
 }
 
+
+const updateUserDefaultPassword = async (employeeId, newPassword, session) => {
+    try {
+        // Validate that the employeeId is a valid ObjectId.
+        mongooseUtilities.validateObjectId(employeeId);
+
+        // Ensure the user exists.
+        await mongooseUtilities.validateUserExistanceById(employeeId);
+    
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const updatedEmployee = await User.findByIdAndUpdate(
+            employeeId,
+            { $set: { password: hashedPassword, isDefaultPassword: false } },
+            { returnDocument: 'after', session }
+        );
+
+        if (!updatedEmployee) {
+            throw new CustomError('Update unsuccessful', 400);
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     createNewUser,
     getEmployees,
-    deleteUserById
+    deleteUserById,
+    updateUserDefaultPassword
 };

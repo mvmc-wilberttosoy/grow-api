@@ -13,6 +13,7 @@ const globalErrorHandler = (error, req, res, next) => {
     };
 
     res.status(500).json({
+        success: false,
         message: 'An unexpected error occured.'
     });
 };

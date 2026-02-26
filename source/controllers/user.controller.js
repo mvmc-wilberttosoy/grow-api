@@ -237,6 +237,23 @@ const deleteEmployeeById = async (req, res, next) => {
     }
 }
 
+
+const updateUserDefaultPassword = async (req, res, next) => {
+    const session = await mongooseUtilities.startTransaction();
+
+    try {
+        const { employeeId, newPassword } = req.body;
+
+        await userServices.updateUserDefaultPassword(employeeId, newPassword, session);
+        await mongooseUtilities.commitTransaction(session);
+
+        return res.status(200).json({ success: true, message: 'New user password' });
+    } catch (error) {
+        await mongooseUtilities.abortTransaction(session);
+        next(error);
+    }
+}
+
 module.exports = {
     createNewUser,
     getEmployees,
@@ -244,5 +261,6 @@ module.exports = {
     getEmployeesByDivisionId,
     getEmployeesByDivisionIdAndDepartmentId,
     updateEmployeeById,
-    deleteEmployeeById
+    deleteEmployeeById,
+    updateUserDefaultPassword
 }

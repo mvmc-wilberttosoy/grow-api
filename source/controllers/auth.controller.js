@@ -24,8 +24,11 @@ const login = async (req, res) => {
 
         res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
 
+        const isDefaultPassword = user.isDefaultPassword;
         return res.status(200).json({ 
+            success: true,
             message: 'Logged in successfully',
+            isDefaultPassword,
             accessToken
         });
     } catch (error) {
