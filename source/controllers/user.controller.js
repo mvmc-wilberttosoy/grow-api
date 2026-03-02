@@ -28,7 +28,10 @@ const createNewUser = async (req, res, next) => {
         await mongooseUtilities.commitTransaction(session);
 
         // Respond with sucess message.
-        return res.status(201).json({ message: 'New user created successfully' });
+        return res.status(201).json({ 
+            success: true, 
+            message: 'New user created successfully' 
+        });
     } catch (error) {
         // Rollback transaction on error and pass to next middleware.
         await mongooseUtilities.abortTransaction(session);
@@ -254,6 +257,15 @@ const updateUserDefaultPassword = async (req, res, next) => {
     }
 }
 
+const getAllOfficers = async (req, res, next) => {
+    try {
+        const officers = await User.find({ level: { $in: ['Supervisor', 'Manager'] } }).populate('departmentId', 'name');
+        return res.status(200).json(officers);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createNewUser,
     getEmployees,
@@ -262,5 +274,6 @@ module.exports = {
     getEmployeesByDivisionIdAndDepartmentId,
     updateEmployeeById,
     deleteEmployeeById,
-    updateUserDefaultPassword
+    updateUserDefaultPassword,
+    getAllOfficers
 }

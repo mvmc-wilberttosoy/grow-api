@@ -7,12 +7,14 @@ const {
     getEmployeesByDivisionIdAndDepartmentId,
     updateEmployeeById,
     deleteEmployeeById,
-    updateUserDefaultPassword
+    updateUserDefaultPassword,
+    getAllOfficers
 } = require('../controllers/user.controller');
 
 router.post('/', createNewUser);
 router.get('/', getEmployees);
 router.put('/newpassword', updateUserDefaultPassword);
+router.get('/getAllOfficers', getAllOfficers);
 
 router.get('/:employeeId', getEmployeeById);
 router.put('/:employeeId', updateEmployeeById);
