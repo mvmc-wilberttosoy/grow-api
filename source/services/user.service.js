@@ -74,7 +74,7 @@ const createNewUser = async (reqBody, session, next) => {
 
 const getEmployees = async () => {
     try {
-        const employees = await User.find({ role: 'User' });
+        const employees = await User.find({ role: 'User' }).populate('departmentId', 'name');
         if (employees.length === 0) {
             throw new CustomError('No current employees', 404);
         }
