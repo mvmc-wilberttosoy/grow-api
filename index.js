@@ -20,6 +20,7 @@ app.use('/api/v1/users', require('./source/routes/user.routes'));
 app.use('/api/v1/divisions', require('./source/routes/division.routes'));
 app.use('/api/v1/departments', require('./source/routes/department.routes'));
 app.use('/api/v1/touchpoints', require('./source/routes/touchpoint.routes'));
+app.use('/api/v1/companyIds', require('./source/routes/companyId.routes'));
 
 app.use(globalErrorHandler);
 app.listen(PORT, () => {
