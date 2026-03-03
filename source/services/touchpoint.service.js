@@ -40,7 +40,30 @@ const deleteTouchpoints = async (employeeId, session) => {
     }
 }
 
+const getUserTouchpoints = async (employeeId) => {
+    try {
+        const touchpoints = await Touchpoint.find({ employeeId: employeeId })
+            .populate({
+                path: 'approverId', // Populating the approverId field
+                select: 'firstName lastName position divisionId departmentId', // Select relevant fields
+                populate: [
+                    { path: 'divisionId', select: 'name' },  // Populate divisionId with the name field
+                    { path: 'departmentId', select: 'name' }  // Populate departmentId with the name field
+                ]
+            });
+
+        if (touchpoints.length === 0) {
+            throw new CustomError('Touchpoints not found', 404);
+        }
+
+        return touchpoints;
+    } catch (error) {
+        throw new CustomError('Touchpoints not found', 404);
+    }
+};
+
 module.exports = {
     createTouchpoints,
     deleteTouchpoints,
+    getUserTouchpoints
 };
