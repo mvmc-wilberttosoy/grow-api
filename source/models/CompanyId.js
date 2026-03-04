@@ -15,6 +15,14 @@ const companyIdSchema = new mongoose.Schema(
                 type: String
             }
         },
+        signature: {
+            url: {
+                type: String
+            },
+            publicId: {
+                type: String
+            }
+        },
         emergencyContactName: {
             type: String,
         },

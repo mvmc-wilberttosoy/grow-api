@@ -8,6 +8,7 @@ const createCompanyId = async (employeeId, session) => {
                 {
                     employeeId: employeeId,
                     picture: { url: null, publicId: null },
+                    signature: { url: null, publicId: null },
                     emergencyContactName: null,
                     emergencyContactAddress: null,
                     emergencyContactNumber: null

@@ -8,7 +8,7 @@ const getEmployeesCompanyIds = async (req, res, next) => {
             path: 'employeeId',
             select: 'firstName lastName position departmentId -_id',
             populate: [
-                { path: 'departmentId', select: 'name -_id'}
+                { path: 'departmentId', select: 'name -_id' }
             ]
         })
         return res.status(200).json(companyIds);
@@ -17,6 +17,25 @@ const getEmployeesCompanyIds = async (req, res, next) => {
     }
 }
 
+const getEmployeeCompanyId = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+
+        const companyId = await CompanyId.findById(id).populate({
+            path: 'employeeId',
+            select: 'firstName lastName position departmentId -_id',
+            populate: [
+                { path: 'departmentId', select: 'name -_id' }
+            ]
+        })
+        return res.status(200).json(companyId)
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
-    getEmployeesCompanyIds
+    getEmployeesCompanyIds,
+    getEmployeeCompanyId
 }
