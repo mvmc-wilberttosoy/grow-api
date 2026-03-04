@@ -22,6 +22,7 @@ app.use('/api/v1/departments', require('./source/routes/department.routes'));
 app.use('/api/v1/touchpoints', require('./source/routes/touchpoint.routes'));
 app.use('/api/v1/companyIds', require('./source/routes/companyId.routes'));
 app.use('/api/v1/metrobanks', require('./source/routes/metrobank.routes'));
+app.use('/api/v1/uniforms', require('./source/routes/uniform.routes'));
 
 app.use(globalErrorHandler);
 app.listen(PORT, () => {

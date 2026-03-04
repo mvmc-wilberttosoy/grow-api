@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 // Services
 const UniformService = require('../services/uniform.service');
+const Uniform = require('../models/Uniform');
 
 const updateUserUniform = async (req, res) => {
     try {
@@ -42,3 +43,24 @@ const updateUserUniform = async (req, res) => {
         return res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
+const getUniforms = async (req, res, next) => {
+    try {
+        const uniforms = await Uniform.find({}).populate({
+            path: 'employeeId',
+            select: 'firstName lastName position departmentId -_id',
+            populate: [
+                { path: 'departmentId', select: 'name -_id' }
+            ]
+        });
+
+        return res.status(200).json(uniforms);
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = {
+    getUniforms,
+    updateUserUniform
+}
