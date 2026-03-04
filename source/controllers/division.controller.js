@@ -37,7 +37,21 @@ const createNewDivision = async (req, res) => {
 // Get all divisions
 const getDivisions = async (req, res) => {
     try {
-        const divisions = await Division.find({});
+        const divisions = await Division.aggregate([
+            {
+                $match: {
+                    name: { $ne: 'Admin' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'departments',
+                    localField: '_id',
+                    foreignField: 'divisionId',
+                    as: 'departments'
+                }
+            }
+        ])
         if (divisions.length == 0) {
             return res.status(400).json({ message: 'No divisions yet' });
         }
