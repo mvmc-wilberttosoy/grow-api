@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const {
-    getMetrobanks
+    getMetrobanks,
+    getMetrobank
 } = require('../controllers/metrobank.controller');
 
 router.get('/', getMetrobanks);
+router.get('/:id', getMetrobank);
 
 module.exports = router;

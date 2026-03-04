@@ -8,10 +8,10 @@ const getMetrobanks = async (req, res, next) => {
                 path: 'employeeId',
                 select: 'firstName lastName position departmentId -_id',
                 populate: [
-                    { path: 'departmentId', select: 'name -_id'}
+                    { path: 'departmentId', select: 'name -_id' }
                 ]
             });
-        
+
         if (metrobanks.length === 0) {
             throw new CustomError('No metrobanks yet', 404);
         };
@@ -22,6 +22,24 @@ const getMetrobanks = async (req, res, next) => {
     }
 }
 
+const getMetrobank = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const metrobank = await Metrobank.findById(id).populate({
+            path: 'employeeId',
+            select: 'firstName lastName position departmentId -_id',
+            populate: [
+                { path: 'departmentId', select: 'name -_id' }
+            ]
+        })
+        return res.status(200).json(metrobank);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
-    getMetrobanks
+    getMetrobanks,
+    getMetrobank
 }
