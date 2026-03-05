@@ -1,5 +1,6 @@
 const Touchpoint = require('../models/Touchpoints');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 const touchpointServices = require('../services/touchpoint.service');
 
@@ -69,7 +70,41 @@ const getAllTouchpoints = async (req, res, next) => {
     }
 };
 
+const getUserTouchpoints = async (req, res, next) => {
+    try {
+        const { id } = req.params; 
+        const objectId = new mongoose.Types.ObjectId(id);
+
+        const touchpoints = await User.aggregate([
+            {
+                $match: { _id: objectId }
+            },
+            {
+                $lookup: {
+                    from: 'touchpoints',
+                    localField: '_id',
+                    foreignField: 'employeeId',
+                    as: 'touchpoints'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'departments',           // Name of the department collection
+                    localField: 'departmentId',    // Field in the User model
+                    foreignField: '_id',           // Field in the Department model
+                    as: 'department'               // Store the department data in the 'department' field
+                }
+            }
+        ])
+
+        return res.status(200).json(touchpoints);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getUserTouchpointByUserId,
-    getAllTouchpoints
+    getAllTouchpoints,
+    getUserTouchpoints
 }
